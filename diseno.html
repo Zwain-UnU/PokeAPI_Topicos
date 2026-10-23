@@ -1,0 +1,529 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Consumo de API - Grupo B</title>
+
+    <style>
+        /* =========================
+           CONFIGURACIÓN GENERAL
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(
+                circle at center,
+                #ed1c24 0%,
+                #b3000b 55%,
+                #650008 100%
+            );
+
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 25px;
+        }
+
+        /* =========================
+           CONTENEDOR PRINCIPAL
+        ========================= */
+
+        .contenedor {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        /* =========================
+           TÍTULO
+        ========================= */
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: #ffd700;
+            text-shadow: 0 0 18px rgba(255, 215, 0, 0.35);
+            margin-bottom: 15px;
+        }
+
+        .subtitulo {
+            font-size: 1.2rem;
+            color: #ffe5e5;
+            margin-bottom: 30px;
+        }
+
+        /* =========================
+           TARJETA CENTRAL
+        ========================= */
+
+        .tarjeta {
+            background: rgba(75, 0, 0, 0.4);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 24px;
+
+            padding: 30px 20px;
+
+            box-shadow:
+                0 0 35px rgba(0, 0, 0, 0.25),
+                0 0 35px rgba(255, 190, 0, 0.08);
+        }
+
+        /* =========================
+           ESCENARIO DEL POKÉMON
+           Sin fondo ni recuadro
+        ========================= */
+
+        .escenario {
+            position: relative;
+
+            width: 340px;
+            height: 340px;
+            max-width: 100%;
+
+            margin: 0 auto 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: transparent;
+            overflow: visible;
+            isolation: isolate;
+        }
+
+        /* =========================
+           IMAGEN DEL POKÉMON
+        ========================= */
+
+        #pokemon-img {
+            position: relative;
+            z-index: 2;
+
+            width: 300px;
+            height: 300px;
+            max-width: 100%;
+
+            object-fit: contain;
+
+            /* Transición suave al revelar */
+            transition: filter 0.6s ease;
+        }
+
+        /* =========================
+           SILUETA NEGRA
+           CON AURA DORADA
+        ========================= */
+
+        .silueta {
+            filter:
+                brightness(0)
+                drop-shadow(0 0 3px #ffdf55)
+                drop-shadow(0 0 8px #ffc000)
+                drop-shadow(0 0 17px rgba(255, 174, 0, 0.9))
+                drop-shadow(0 0 30px rgba(255, 140, 0, 0.45));
+
+            animation: brilloSilueta 2.5s ease-in-out infinite;
+        }
+
+        /* =========================
+           POKÉMON REVELADO
+        ========================= */
+
+        .revelado {
+            filter:
+                brightness(1)
+                drop-shadow(0 0 8px rgba(255, 215, 0, 0.45));
+        }
+
+        /* =========================
+           ANIMACIÓN DEL RESPLANDOR
+        ========================= */
+
+        @keyframes brilloSilueta {
+            0%, 100% {
+                filter:
+                    brightness(0)
+                    drop-shadow(0 0 3px #ffdf55)
+                    drop-shadow(0 0 8px #ffc000)
+                    drop-shadow(0 0 17px rgba(255, 174, 0, 0.75))
+                    drop-shadow(0 0 25px rgba(255, 140, 0, 0.35));
+            }
+
+            50% {
+                filter:
+                    brightness(0)
+                    drop-shadow(0 0 5px #fff1a3)
+                    drop-shadow(0 0 12px #ffdc28)
+                    drop-shadow(0 0 25px rgba(255, 174, 0, 1))
+                    drop-shadow(0 0 40px rgba(255, 140, 0, 0.6));
+            }
+        }
+
+        /* =========================
+           PARTÍCULAS DORADAS
+        ========================= */
+
+        .particulas {
+            position: absolute;
+            inset: 0;
+
+            z-index: 3;
+            overflow: visible;
+            pointer-events: none;
+        }
+
+        .particula {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: 4px;
+            height: 4px;
+
+            border-radius: 50%;
+            background: #fff0a0;
+
+            box-shadow:
+                0 0 5px #ffd700,
+                0 0 12px #ffb700,
+                0 0 20px #ff8c00;
+
+            opacity: 0;
+
+            --dx: 40px;
+            --dy: -70px;
+
+            animation: particulaVolando 2.8s ease-out infinite;
+        }
+
+        @keyframes particulaVolando {
+            0% {
+                transform: translate(-50%, -50%) scale(0.4);
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 1;
+            }
+
+            70% {
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translate(
+                    calc(-50% + var(--dx)),
+                    calc(-50% + var(--dy))
+                ) scale(0.1);
+
+                opacity: 0;
+            }
+        }
+
+        /* Dirección y retraso de cada partícula */
+
+        .particula:nth-child(1) {
+            --dx: -120px;
+            --dy: -100px;
+            animation-delay: 0s;
+        }
+
+        .particula:nth-child(2) {
+            --dx: 110px;
+            --dy: -120px;
+            animation-delay: 0.4s;
+        }
+
+        .particula:nth-child(3) {
+            --dx: -145px;
+            --dy: -15px;
+            animation-delay: 0.8s;
+        }
+
+        .particula:nth-child(4) {
+            --dx: 140px;
+            --dy: 20px;
+            animation-delay: 1.2s;
+        }
+
+        .particula:nth-child(5) {
+            --dx: -85px;
+            --dy: 115px;
+            animation-delay: 0.6s;
+        }
+
+        .particula:nth-child(6) {
+            --dx: 90px;
+            --dy: 110px;
+            animation-delay: 1.5s;
+        }
+
+        .particula:nth-child(7) {
+            --dx: -35px;
+            --dy: -145px;
+            animation-delay: 1s;
+        }
+
+        .particula:nth-child(8) {
+            --dx: 45px;
+            --dy: 140px;
+            animation-delay: 1.8s;
+        }
+
+        .particula:nth-child(9) {
+            --dx: -155px;
+            --dy: 70px;
+            animation-delay: 1.4s;
+        }
+
+        .particula:nth-child(10) {
+            --dx: 150px;
+            --dy: -75px;
+            animation-delay: 0.2s;
+        }
+
+        .particula:nth-child(11) {
+            --dx: -65px;
+            --dy: -115px;
+            animation-delay: 2s;
+        }
+
+        .particula:nth-child(12) {
+            --dx: 75px;
+            --dy: 80px;
+            animation-delay: 2.2s;
+        }
+
+        /* =========================
+           NOMBRE DEL POKÉMON
+        ========================= */
+
+        #pokemon-name {
+            min-height: 48px;
+
+            margin: 15px 0 30px;
+
+            font-size: 2.4rem;
+            color: #ffd700;
+
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+        }
+
+        /* =========================
+           BOTONES
+        ========================= */
+
+        .botones {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        button {
+            padding: 18px 26px;
+
+            border: none;
+            border-radius: 12px;
+
+            font-size: 1.15rem;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        /* Botón para revelar */
+
+        #btn-revelar {
+            color: #1a0d00;
+
+            background: linear-gradient(
+                135deg,
+                #fff0a0,
+                #ffd700,
+                #ffae00
+            );
+
+            box-shadow: 0 0 18px rgba(255, 190, 0, 0.2);
+        }
+
+        #btn-revelar:hover {
+            background: #fff0a0;
+
+            box-shadow:
+                0 0 15px rgba(255, 215, 0, 0.5),
+                0 0 30px rgba(255, 174, 0, 0.25);
+        }
+
+        /* Botón de siguiente Pokémon */
+
+        #btn-siguiente {
+            color: white;
+
+            background: rgba(30, 0, 0, 0.75);
+            border: 1px solid rgba(255, 215, 0, 0.65);
+        }
+
+        #btn-siguiente:hover {
+            color: #ffd700;
+            border-color: #ffd700;
+
+            box-shadow: 0 0 18px rgba(255, 215, 0, 0.2);
+        }
+
+        /* =========================
+           PIE DE PÁGINA
+        ========================= */
+
+        .pie {
+            margin-top: 25px;
+            font-size: 0.95rem;
+            color: #ffdada;
+            opacity: 0.8;
+        }
+
+        /* =========================
+           ADAPTACIÓN A CELULARES
+        ========================= */
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .tarjeta {
+                padding: 20px 12px;
+            }
+
+            .escenario {
+                width: 300px;
+                height: 300px;
+            }
+
+            #pokemon-img {
+                width: 270px;
+                height: 270px;
+            }
+
+            #pokemon-name {
+                font-size: 2rem;
+            }
+
+            .botones {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                font-size: 1.05rem;
+            }
+        }
+
+        /* Preferencia por menos movimiento */
+
+        @media (prefers-reduced-motion: reduce) {
+            .silueta,
+            .particula {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <main class="contenedor">
+
+        <h1>Consumo de API - Grupo B</h1>
+
+        <p class="subtitulo">
+            ¿Puedes descubrir al Pokémon misterioso?
+        </p>
+
+        <section class="tarjeta">
+
+            <!-- Imagen y efectos visuales -->
+
+            <div class="escenario">
+
+                <img
+                    id="pokemon-img"
+                    class="silueta"
+                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+                    alt="Silueta del Pokémon misterioso"
+                >
+
+                <!-- Partículas doradas animadas -->
+
+                <div class="particulas" aria-hidden="true">
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                    <span class="particula"></span>
+                </div>
+
+            </div>
+
+            <!-- Nombre oculto -->
+
+            <h2 id="pokemon-name">???</h2>
+
+            <!-- Botones de la actividad -->
+
+            <div class="botones">
+
+                <button id="btn-revelar" type="button">
+                    Revelar Pokémon (GET)
+                </button>
+
+                <button id="btn-siguiente" type="button">
+                    Siguiente Aleatorio
+                </button>
+
+            </div>
+
+        </section>
+
+        <p class="pie">
+            Grupo B · Pokémon API
+        </p>
+
+    </main>
+    <script src="API.js"></script>
+</body>
+</html>
